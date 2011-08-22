@@ -85,6 +85,7 @@ void __iomem *dac_base;
 #define ARMCLOCK_1400MHZ		1400000
 #define ARMCLOCK_1200MHZ		1200000
 #define ARMCLOCK_1000MHZ		1000000
+#define ARMCLOCK_500MHZ			 500000
 
 static int s5pv310_max_armclk;
 
@@ -1135,6 +1136,11 @@ void s5pv310_set_frequency(unsigned int old_index, unsigned int new_index)
 			s5pv310_set_clkdiv(new_index);
 
 			/* 2. Change the apll m,p,s value */
+			if (freqs.new == ARMCLOCK_500MHZ) {
+				regulator_set_voltage(arm_regulator,
+					s5pv310_volt_table[new_index - 1].arm_volt,
+					s5pv310_volt_table[new_index - 1].arm_volt);
+			}
 			s5pv310_set_apll(new_index);
 		}
 #else
@@ -1200,6 +1206,11 @@ void s5pv310_set_frequency(unsigned int old_index, unsigned int new_index)
 			/* Clock Configuration Procedure */
 
 			/* 1. Change the apll m,p,s value */
+			if (freqs.old == ARMCLOCK_500MHZ) {
+				regulator_set_voltage(arm_regulator,
+					s5pv310_volt_table[new_index - 2].arm_volt,
+					s5pv310_volt_table[new_index - 2].arm_volt);
+			}
 			s5pv310_set_apll(new_index);
 
 			/* 2. Change the system clock divider values */
@@ -1652,7 +1663,7 @@ int s5pv310_cpufreq_lock(unsigned int nId,
 		if (cpufreq_level != CPU_L0) {
 			cpufreq_level -= 1;
 		} else {
-			printk(KERN_ERR
+			printk(KERN_WARNING
 				"[CPUFREQ]cpufreq lock to 1GHz in place of 1.2GHz\n");
 		}
 	}
@@ -1875,15 +1886,27 @@ static int s5pv310_cpufreq_reboot_notifier_call(struct notifier_block *this,
 {
 	unsigned int cpu = 0;
 	int ret = 0;
+	struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
 
-	ret = cpufreq_driver_target(cpufreq_cpu_get(cpu),
-		s5pv310_freq_table[L0].frequency, DISABLE_FURTHER_CPUFREQ);
-	if (WARN_ON(ret < 0))
-		return NOTIFY_BAD;
+	if (strncmp(policy->governor->name, "powersave", CPUFREQ_NAME_LEN)) {
+		ret = cpufreq_driver_target(policy,
+			s5pv310_freq_table[L0].frequency, DISABLE_FURTHER_CPUFREQ);
+		if (ret < 0)
+			return NOTIFY_BAD;
 #ifdef CONFIG_S5PV310_BUSFREQ
-	s5pv310_busfreq_lock(DVFS_LOCK_ID_PM, BUS_L0);
+		s5pv310_busfreq_lock(DVFS_LOCK_ID_PM, BUS_L0);
 #endif
-	printk(KERN_ERR "C1 REBOOT Notifier for CPUFREQ\n");
+	} else {
+#if defined(CONFIG_REGULATOR)
+		regulator_set_voltage(arm_regulator, s5pv310_volt_table[L0].arm_volt,
+			s5pv310_volt_table[L0].arm_volt);
+
+		regulator_set_voltage(int_regulator, s5pv310_busfreq_table[LV_0].volt,
+			s5pv310_busfreq_table[LV_0].volt);
+#endif
+	}
+
+	printk(KERN_INFO "C1 REBOOT Notifier for CPUFREQ\n");
 
 	return NOTIFY_DONE;
 }
