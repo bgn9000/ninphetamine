@@ -367,6 +367,8 @@ struct usb_composite_dev {
 /* soonyong.cho : Below values are used for samsung composite framework. */
 	unsigned int			product_num; 	/* product number (ex : 0, 1, 2, ..) */
 	struct android_usb_product 	*products;	/* products list */
+	/* number of multi configuration */
+	int				multi_configuration;
 #endif
 };
 
