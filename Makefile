@@ -356,6 +356,13 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   # Needed for codesourcery 4.5.2 toolchain
 		   -mno-unaligned-access
+
+#change@wtl.kSingh - enabling FIPS mode - starts
+ifeq ($(USE_SEC_FIPS_MODE),true)
+KBUILD_CFLAGS += -DSEC_FIPS_ENABLED
+endif
+#change@wtl.kSingh - enabling FIPS mode - ends
+
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
