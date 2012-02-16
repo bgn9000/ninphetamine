@@ -1,7 +1,57 @@
 *** arch/arm/mach-s5pv310/mach-c1.c	2011-07-13 10:49:11.000000000 +0100
 --- arch/arm/mach-s5pv310/mach-c1.c	2011-08-09 09:46:38.000000000 +0100
 ***************
-*** 5820,6584 ****
+*** 42,49 ****
+  #ifdef CONFIG_ANDROID_PMEM
+  #include <linux/android_pmem.h>
+  #endif
+- #include <linux/reboot.h>
+- #include <linux/host_notify.h>
+  
+  #include <asm/pmu.h>
+  #include <asm/mach/arch.h>
+--- 42,47 ----
+  #ifdef CONFIG_ANDROID_PMEM
+  #include <linux/android_pmem.h>
+  #endif
+  
+  #include <asm/pmu.h>
+  #include <asm/mach/arch.h>
+***************
+*** 5741,5751 ****
+  #ifdef CONFIG_VIDEO_TSI
+  	&s3c_device_tsi,
+  #endif
+  	&pmu_device,
+  
+  #ifdef CONFIG_DEV_THERMAL
+  	&s5p_device_tmu,
+  #endif
+  };
+  
+  #ifdef CONFIG_VIDEO_TVOUT
+--- 6386,6404 ----
+  #ifdef CONFIG_VIDEO_TSI
+  	&s3c_device_tsi,
+  #endif
++ #ifdef CONFIG_SAMSUNG_PHONE_TTY
++ 	&sec_device_dpram,
++ #endif
+  	&pmu_device,
+  
+  #ifdef CONFIG_DEV_THERMAL
+  	&s5p_device_tmu,
+  #endif
++ 
++ #if defined(CONFIG_WIMAX_CMC) && defined(CONFIG_TARGET_LOCALE_NA)
++ 	&s3c_device_cmc732,
++ #endif
++ 
+  };
+  
+  #ifdef CONFIG_VIDEO_TVOUT
+***************
+*** 5814,6578 ****
   };
   #endif
   
@@ -767,7 +817,7 @@
   static void smdkc210_power_off(void)
   {
   	int poweroff_try = 0;
---- 6473,6478 ----
+--- 6467,6472 ----
   };
   #endif
   
