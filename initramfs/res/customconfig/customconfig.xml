@@ -1,0 +1,51 @@
+<settingsRoot>
+   <settingsTab name="Misc">
+      <settingsPane description="PaneDescription" name="PaneName">
+         <button description="Back up the efs partition" name="BackupEFS" action="efs-backup" label="Backup EFS"/>
+         <checkbox description="Enable or Disable media scanner" name="MediaScanner" action="media-scanner" label="Media Scanner"/>
+         <seekBar description="Description" name="Title" action="Action" unit="mV" min="100" reversed="false" step="25" max="200"/>
+      </settingsPane>
+      <settingsPane description="TestPane" name="TestPane">
+         <button description="Description" name="Title" action="Action" label="Button"/>
+         <checkbox description="Description" name="Title" action="Action" label="Checkbox"/>
+         <seekBar description="Description" name="Title" action="Action" unit="mV" min="100" reversed="false" step="25" max="200"/>
+      </settingsPane>
+   </settingsTab>
+   <settingsTab name="GPU">
+      <settingsPane description="GPU Frequency" name="GPUFreq">
+         <spinner description="Change GPU Freq 1" name="GPUFreq1" action="gpu-freq 1">
+             <spinnerItem name="400MHz" value="400"/> 
+             <spinnerItem name="266MHz" value="266"/> 
+             <spinnerItem name="200MHz" value="200"/> 
+             <spinnerItem name="160MHz" value="160"/> 
+             <spinnerItem name="133MHz" value="133"/> 
+             <spinnerItem name="100MHz" value="100"/> 
+             <spinnerItem name="66MHz" value="66"/> 
+             <spinnerItem name="40MHz" value="40"/> 
+         </spinner>
+         <spinner description="Change GPU Freq 2" name="GPUFreq2" action="gpu-freq 2">
+             <spinnerItem name="400MHz" value="400"/> 
+             <spinnerItem name="266MHz" value="266"/> 
+             <spinnerItem name="200MHz" value="200"/> 
+             <spinnerItem name="160MHz" value="160"/> 
+             <spinnerItem name="133MHz" value="133"/> 
+             <spinnerItem name="100MHz" value="100"/> 
+             <spinnerItem name="66MHz" value="66"/> 
+             <spinnerItem name="40MHz" value="40"/> 
+         </spinner>
+          <spinner description="Change GPU Freq 3" name="GPUFreq3" action="gpu-freq 3">
+             <spinnerItem name="400MHz" value="400"/> 
+             <spinnerItem name="266MHz" value="266"/> 
+             <spinnerItem name="200MHz" value="200"/> 
+             <spinnerItem name="160MHz" value="160"/> 
+             <spinnerItem name="133MHz" value="133"/> 
+             <spinnerItem name="100MHz" value="100"/> 
+             <spinnerItem name="66MHz" value="66"/> 
+             <spinnerItem name="40MHz" value="40"/> 
+         </spinner>
+         <seekBar description="GPU Stay Count1" name="GPUStayCount1" action="gpu-staycount 1" unit="" min="1" reversed="false" step="1" max="5"/>
+         <seekBar description="GPU Stay Count2" name="GPUStayCount2" action="gpu-staycount 2" unit="" min="1" reversed="false" step="1" max="5"/>
+         <seekBar description="GPU Stay Count3" name="GPUStayCount3" action="gpu-staycount 3" unit="" min="1" reversed="false" step="1" max="5"/>
+     </settingsPane>
+   </settingsTab>
+</settingsRoot>

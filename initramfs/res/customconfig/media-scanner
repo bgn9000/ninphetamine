@@ -1,0 +1,11 @@
+#!/sbin/busybox sh
+
+case "${1}" in
+  on)
+    MEDIA_SCANNER="on"
+    ;;
+  off)
+    MEDIA_SCANNER="off"
+    ;;
+esac;
+echo $MEDIA_SCANNER

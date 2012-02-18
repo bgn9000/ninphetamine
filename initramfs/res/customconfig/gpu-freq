@@ -1,0 +1,16 @@
+#!/sbin/busybox sh
+
+if [ "a$2" == "a" ];then
+  evalcmd='eval "echo \$GPUFREQ$1"'
+  eval $evalcmd
+else
+  evalcmd='eval "GPUFREQ$1=$2"'
+  eval $evalcmd
+  evalcmd='eval "echo \$GPUFREQ$1"'
+  eval $evalcmd
+fi
+
+if [ -f /sys/class/misc/gpu_voltage_control/gpu_control ];then
+echo "$GPUFREQ1 $GPUFREQ2 $GPUFREQ3" > /sys/class/misc/gpu_voltage_control/gpu_control
+fi
+
