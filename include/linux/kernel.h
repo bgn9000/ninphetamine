@@ -389,6 +389,16 @@ extern int hex_to_bin(char ch);
         printk(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_err(fmt, ...) \
         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_aud_fmt(fmt) "[AUD] " KBUILD_MODNAME ": " fmt
+#define pr_aud_fmt1(fmt) "[AUD]" fmt
+#define pr_aud_err(fmt, ...) \
+			printk(KERN_ERR pr_aud_fmt(fmt), ##__VA_ARGS__)
+#define pr_aud_err1(fmt, ...) \
+			printk(KERN_ERR pr_aud_fmt1(fmt), ##__VA_ARGS__)
+#define pr_aud_info(fmt, ...) \
+			printk(KERN_INFO pr_aud_fmt(fmt), ##__VA_ARGS__)
+#define pr_aud_info1(fmt, ...) \
+			printk(KERN_INFO pr_aud_fmt1(fmt), ##__VA_ARGS__)
 #define pr_warning(fmt, ...) \
         printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_warn pr_warning
@@ -785,3 +795,11 @@ struct sysinfo {
 #endif
 
 #endif
+
+#define FEATURE_BIT_ROM 0 //0:Samsung 1:AOSP(CM7|MIUI|Others)
+#define FEATURE_BIT_AOSP_TYPE 1 //1-CM7 0-OtherAOSP|MIUI
+
+#define SAMSUNGROM if( (siyah_feature_set & (1<<FEATURE_BIT_ROM) ) == 0 )
+#define AOSPROM if( (siyah_feature_set & (1<<FEATURE_BIT_ROM) )== (1<<FEATURE_BIT_ROM) )
+#define CYANOGENMOD if( (siyah_feature_set & (1<<FEATURE_BIT_AOSP_TYPE) ) == (1<<FEATURE_BIT_AOSP_TYPE) )
+//more to come...
