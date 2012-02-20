@@ -543,7 +543,11 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
-KBUILD_CFLAGS	+= -O2
+	ifdef CONFIG_CC_OPTIMIZE_FOR_SPEED
+	KBUILD_CFLAGS	+= -O3
+	else
+	KBUILD_CFLAGS	+= -O2
+	endif
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
@@ -1134,7 +1138,11 @@ PHONY += $(clean-dirs) clean archclean
 $(clean-dirs):
 	$(Q)$(MAKE) $(clean)=$(patsubst _clean_%,%,$@)
 
-clean: archclean $(clean-dirs)
+clean: archclean
+	$(call cmd,rmdirs)
+	$(call cmd,rmfiles)
+
+cleanall: archclean $(clean-dirs)
 	$(call cmd,rmdirs)
 	$(call cmd,rmfiles)
 	@find . $(RCS_FIND_IGNORE) \
