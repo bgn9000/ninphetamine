@@ -509,6 +509,19 @@ void touchkey_work_func(struct work_struct *p)
 		       gpio_pend_mask_mem);
 	}
 #endif
+
+CYANOGENMOD {
+	/* we have timed out or the lights should be on */
+	if (led_timer.expires > jiffies || led_timeout != BL_ALWAYS_OFF) {
+		status = 1;
+		i2c_touchkey_write((u8 *)&status, 1); /* turn on */
+	}
+	/* restart the timer */
+	if (led_timeout > 0) {
+		mod_timer(&led_timer, jiffies + msecs_to_jiffies(led_timeout));
+	}
+}
+
 	set_touchkey_debug('A');
 	enable_irq(IRQ_TOUCH_INT);
 }
