@@ -2393,7 +2393,7 @@ static int m5mo_s_parm(struct v4l2_subdev *sd, struct v4l2_streamparm *a)
 	}
 
 	if (fps != state->fps) {
-		if (fps <= 0 || fps > 30) {
+		if (fps <= 0 || fps > 120) {
 			cam_err("invalid frame rate %d\n", fps);
 			fps = 30;
 		}

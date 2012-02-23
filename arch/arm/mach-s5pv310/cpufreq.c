@@ -54,7 +54,7 @@ int exp_UV_mV[8] = {
 	1100000, // 800Mhz
 	1000000, // 500Mhz
 	975000,  // 200Mhz
-	975000,  // 100Mhz
+	950000,  // 100Mhz
 };
 
 static struct clk *arm_clk;
@@ -149,9 +149,9 @@ static unsigned int freq_trans_table[CPUFREQ_LEVEL_END][CPUFREQ_LEVEL_END] = {
 	{ 2, 2, 0, 4, 4, 4, 4, 4 },
 	{ 2, 2, 2, 0, 4, 4, 4, 4 },
 	{ 2, 2, 2, 2, 0, 4, 4, 4 },
-	{ 2, 2, 2, 2, 2, 0,12,12 },
-	{ 2, 2, 2, 2, 2,10, 0,12 },
-	{ 2, 2, 2, 2, 2,10,10, 0 },
+	{ 2, 2, 2, 2, 2, 0, 4, 4 },
+	{ 2, 2, 2, 2, 2, 2, 0, 4 },
+	{ 2, 2, 2, 2, 2, 2, 2, 0 },
 };
 
 #ifdef CONFIG_CPU_S5PV310_EVT1
@@ -764,7 +764,7 @@ static struct cpufreq_voltage_table s5pv310_volt_table[CPUFREQ_LEVEL_END] = {
 		.int_volt	= 1000000,
 	}, {
 		.index		= L7,
-		.arm_volt	= 975000,
+		.arm_volt	= 950000,
 		.int_volt	= 1000000,
 	},
 };

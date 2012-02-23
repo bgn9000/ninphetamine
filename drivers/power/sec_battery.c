@@ -28,6 +28,7 @@
 #include <linux/android_alarm.h>
 #include <plat/adc.h>
 #include <mach/sec_battery.h>
+#include "charge_current.h"
 
 #ifdef CONFIG_TARGET_LOCALE_NA
 #define POLLING_INTERVAL	(10 * 1000)
@@ -246,6 +247,7 @@ struct sec_bat_info {
 	unsigned int batt_temp_radc;
 #endif
 	unsigned int batt_current_adc;
+    int batt_chg_current;
 #if defined(CONFIG_TARGET_LOCALE_NAATT)
 	int batt_vf_adc;
 	int batt_event_status;
@@ -554,7 +556,6 @@ static int sec_bat_set_property(struct power_supply *ps,
 	default:
 		return -EINVAL;
 	}
-
 	return 0;
 }
 
@@ -1218,15 +1219,15 @@ static int sec_bat_enable_charging_main(struct sec_bat_info *info, bool enable)
 		switch (info->cable_type) {
 		case CABLE_TYPE_USB:
 			val_type.intval = POWER_SUPPLY_STATUS_CHARGING;
-			val_chg_current.intval = 450;	/* mA */
+			val_chg_current.intval = charge_current_usb;	/* mA */
 			break;
 		case CABLE_TYPE_AC:
 			val_type.intval = POWER_SUPPLY_STATUS_CHARGING;
-			val_chg_current.intval = 650;	/* mA */
+			val_chg_current.intval = charge_current_ac;	/* mA */
 			break;
 		case CABLE_TYPE_MISC:
 			val_type.intval = POWER_SUPPLY_STATUS_CHARGING;
-			val_chg_current.intval = 450;	/* mA */
+			val_chg_current.intval = charge_current_misc;	/* mA */
 			break;
 		default:
 			dev_err(info->dev, "%s: Invalid func use\n", __func__);
@@ -1305,15 +1306,15 @@ static int sec_bat_enable_charging_sub(struct sec_bat_info *info, bool enable)
 		switch (info->cable_type) {
 		case CABLE_TYPE_USB:
 			val_type.intval = POWER_SUPPLY_STATUS_CHARGING;
-			val_chg_current.intval = 450;	/* mA */
+			val_chg_current.intval = charge_current_usb;	/* mA */
 			break;
 		case CABLE_TYPE_AC:
 			val_type.intval = POWER_SUPPLY_STATUS_CHARGING;
-			val_chg_current.intval = 650;	/* mA */
+			val_chg_current.intval = charge_current_ac;	/* mA */
 			break;
 		case CABLE_TYPE_MISC:
 			val_type.intval = POWER_SUPPLY_STATUS_CHARGING;
-			val_chg_current.intval = 450;	/* mA */
+			val_chg_current.intval = charge_current_misc;	/* mA */
 			break;
 		default:
 			dev_err(info->dev, "%s: Invalid func use\n", __func__);
@@ -1860,6 +1861,20 @@ static void sec_bat_polling_work(struct work_struct *work)
 			      msecs_to_jiffies(info->polling_interval));
 }
 
+
+int sec_bat_check_chgcurrent(struct sec_bat_info *info)
+{
+	unsigned long cadc = 0;
+
+	mutex_lock(&info->adclock);
+	cadc = sec_bat_get_adc_data(info, ADC_CH_CHGCURRENT);
+	mutex_unlock(&info->adclock);
+	if(cadc<0) info->batt_chg_current=cadc; else
+	//fit & normalize - gm
+	info->batt_chg_current = (cadc*50-(cadc*cadc/10000*84))/100;
+	return info->batt_chg_current;
+}
+
 #define SEC_BATTERY_ATTR(_name)			\
 {						\
 	.attr = { .name = #_name,		\
@@ -1889,6 +1904,7 @@ static struct device_attribute sec_battery_attrs[] = {
 	SEC_BATTERY_ATTR(batt_temp_adc_spec),
 	SEC_BATTERY_ATTR(batt_test_value),
 	SEC_BATTERY_ATTR(batt_current_adc),
+	SEC_BATTERY_ATTR(batt_chg_current),
 	SEC_BATTERY_ATTR(system_rev),
 #ifdef CONFIG_TARGET_LOCALE_NA
 	SEC_BATTERY_ATTR(fg_soc),
@@ -1940,6 +1956,7 @@ enum {
 	BATT_TEMP_ADC_SPEC,
 	BATT_TEST_VALUE,
 	BATT_CURRENT_ADC,
+	BATT_CHG_CURRENT,
 	BATT_SYSTEM_REV,
 	BATT_FG_PSOC,
 	BATT_LPM_STATE,
@@ -2117,6 +2134,13 @@ static ssize_t sec_bat_show_property(struct device *dev,
 	case BATT_CURRENT_ADC:
 		i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n",
 			info->batt_current_adc);
+		break;
+	case BATT_CHG_CURRENT:
+		if(info->charging_status != POWER_SUPPLY_STATUS_DISCHARGING)
+		{
+			val = sec_bat_check_chgcurrent(info);
+			i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", val);
+		} else i = -EINVAL;
 		break;
 	case BATT_SYSTEM_REV:
 		i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", system_rev);
@@ -2386,6 +2410,7 @@ sec_attrs_failed:
 	while (i--)
 		device_remove_file(dev, &sec_battery_attrs[i]);
 succeed:
+    charge_current_start();
 	return rc;
 }
 
@@ -2423,7 +2448,7 @@ static int sec_bat_read_proc(char *buf, char **start,
 
 #ifdef CONFIG_TARGET_LOCALE_NA
 
-	len = sprintf(buf, "%lu, %u, %u, %u, %u, %u, %d, %d, %d, \
+	len = sprintf(buf, "%lu, %u, %u, %u, %u, %d, %u, %d, %d, %d, \
 %u, %u, %u, %u, %u, %u, %u, %d, %lu\n",
 		cur_time.tv_sec,
 		info->batt_raw_soc,
@@ -2431,6 +2456,7 @@ static int sec_bat_read_proc(char *buf, char **start,
 		info->batt_vfocv,
 		info->batt_vcell,
 		info->batt_current_adc,
+		info->batt_chg_current,
 		info->batt_full_status,
 		info->charging_int_full_count,
 		info->charging_adc_full_count,

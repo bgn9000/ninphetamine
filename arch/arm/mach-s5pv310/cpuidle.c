@@ -103,7 +103,6 @@ static int check_audio_rp_op(void);
 #ifdef CONFIG_MTD_ONENAND
 static int check_onenand_op(void);
 #endif
-#define CONFIG_MACH_C1
 #ifdef CONFIG_MACH_C1
 static int check_gps_uart_op(void);
 #endif /* CONFIG_MACH_C1 */
