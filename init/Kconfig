@@ -478,7 +478,7 @@ config GPU_UNDERVOLTING
 config DEFAULT_CLOCK_LOW
 	int "default low clock"
 	range 100 1200
-	default 200
+	default 100
 	help
 	  default low frequency
 
