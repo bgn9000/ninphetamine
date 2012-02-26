@@ -1937,8 +1937,8 @@ static int s5pv310_cpufreq_cpu_init(struct cpufreq_policy *policy)
 
 	cpufreq_frequency_table_cpuinfo(policy, s5pv310_freq_table);
 	/* set safe default min and max speeds - netarchy */
-	policy->max = 1000 * 1000;
-	policy->min = 100 * 1000;
+	policy->max = CONFIG_DEFAULT_CLOCK_HIGH * 1000;
+	policy->min = CONFIG_DEFAULT_CLOCK_LOW * 1000;
 	return 0;
 }
 
