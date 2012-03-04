@@ -21,7 +21,7 @@ loglevel 3
     
     export ASEC_MOUNTPOINT /mnt/asec
     export LOOP_MOUNTPOINT /mnt/obb
-    export BOOTCLASSPATH /system/framework/core.jar:/system/framework/bouncycastle.jar:/system/framework/ext.jar:/system/framework/framework.jar:/system/framework/android.policy.jar:/system/framework/services.jar:/system/framework/core-junit.jar:/system/framework/kafdex.jar
+    export BOOTCLASSPATH /system/framework/core.jar:/system/framework/bouncycastle.jar:/system/framework/ext.jar:/system/framework/framework.jar:/system/framework/android.policy.jar:/system/framework/services.jar:/system/framework/core-junit.jar
 #FOR ICS
 #    export BOOTCLASSPATH /system/framework/core.jar:/system/framework/core-junit.jar:/system/framework/bouncycastle.jar:/system/framework/ext.jar:/system/framework/framework.jar:/system/framework/android.policy.jar:/system/framework/services.jar:/system/framework/apache-xml.jar:/system/framework/filterfw.jar
 #for sense
@@ -129,13 +129,21 @@ loglevel 3
 on fs
     # mount mtd partitions
     # Mount /system rw first to give the filesystem a chance to save a checkpoint
-    mount ext4 /dev/block/mmcblk0p9 /system wait ro
-    mount ext4 /dev/block/mmcblk0p7 /cache nosuid nodev noatime wait 
+    # mount yaffs2 mtd@system /system
+    # mount yaffs2 mtd@system /system ro remount
+    # mount yaffs2 mtd@userdata /data nosuid nodev
+    # mount yaffs2 mtd@cache /cache nosuid nodev
+    # mount rfs /dev/block/stl9 /system check=no
+    # mount rfs /dev/block/mmcblk0p9 /system check=no
+    mount ext4 /dev/block/mmcblk0p9 /system noatime wait ro nodelalloc
+    # mount rfs /dev/block/stl10 /data nosuid nodev check=no
+    # mount rfs /dev/block/mmcblk0p7 /cache nosuid nodev check=no
+    mount ext4 /dev/block/mmcblk0p7 /cache nosuid nodev noatime wait nodelalloc
 
     # SEC_DMCRYPT move mounting efs befor apply_disk_policy, and set group id to system
     mkdir /efs
-    exec check_filesystem /dev/block/mmcblk0p1 ext4
-    mount ext4 /dev/block/mmcblk0p1 /efs nosuid nodev noatime wait journal_checksum 
+    #mount rfs /dev/block/mmcblk0p1 /efs nosuid nodev check=no
+    mount ext4 /dev/block/mmcblk0p1 /efs nosuid nodev noatime wait nodelalloc
     chown radio system /efs
     chmod 0771 /efs
 
@@ -156,7 +164,7 @@ on post-fs
     mkdir /data
 
     exec check_filesystem /dev/block/mmcblk0p10 ext4
-    mount ext4 /dev/block/mmcblk0p10 /data nosuid nodev noatime wait crypt discard,noauto_da_alloc,journal_checksum
+    mount ext4 /dev/block/mmcblk0p10 /data nosuid nodev noatime wait crypt discard,noauto_da_alloc
     chown system system /data
     chmod 0771 /data
     mkdir /data/system
@@ -178,18 +186,7 @@ on post-fs
     # To keep the clipped data as it is after rebooting
     mkdir /data/clipboard
     chown system system /data/clipboard
-    chmod 0777 /data/clipboard
-
-    # KAF
-    mkdir /data/ktcontents 0770 system ktapp
-    chown system ktapp /data/ktcontents
-    chmod 0770 /data/ktcontents
-
-    mkdir /system/etc/ktdbs 0550 ktdbs ktdbs
-    chown ktdbs ktdbs /system/etc/ktdbs
-    chmod 0550 /system/etc/ktdbs
-    chown ktdbs ktdbs /system/etc/ktdbs/preload_contentsbox.db
-    chmod 0440 /system/etc/ktdbs/preload_contentsbox.db
+    chmod 0775 /data/clipboard
 
     # SEC_DMCRYPT move mounting efs befor apply_disk_policy
     #mkdir /efs
@@ -266,29 +263,6 @@ on post-fs
     mkdir /data/gps 771 system system
     chown system system /data/gps
 
-# KT I-WLAN start
-	mkdir /system/iwlan 0750 root root
-	chown root vpn /system/iwlan
-	chmod 0750 /system/iwlan
-	chmod 0750 /system/iwlan/iwlan
-	chmod 0500 /system/iwlan/iwctl
-	#chmod 0400 /system/iwlan/iwlan.conf
-	chown vpn vpn  /system/iwlan/iwlan.conf
-	chmod 440  /system/iwlan/iwlan.conf
-# KT I-WLAN end
-
-# +++++++++++++++++++++++++++++++++++++++++++
-# for sslvpn
-	mkdir /system/sslvpn 0555 net_admin net_admin
-	chown net_admin net_admin /dev/tun
-	chown net_admin net_admin /system/sslvpn/sslvpn
-	chmod 0660 /dev/tun
-	chmod 0555 /system/sslvpn/sslvpn
-
-#	service sslvpn /sbin/asslvpn
-#	oneshot
-# +++++++++++++++++++++++++++++++++++++++++++
-
 # create basic filesystem structure
     mkdir /data/misc 01771 system misc
     mkdir /data/misc/bluetoothd 0770 bluetooth bluetooth
@@ -298,14 +272,9 @@ on post-fs
     mkdir /data/misc/systemkeys 0700 system system
     mkdir /data/misc/vpn/profiles 0770 system system
     # give system access to wpa_supplicant.conf for backup and restore
-# for KT
-    mkdir /data/misc/wifi 0770 wifi wifi
-    chmod 0771 /data/misc/wifi
-    mkdir /data/misc/wifi/kaf 0771 system wifi
-    chmod 0771 /data/misc/wifi/kaf
-    mkdir /data/misc/wifi 0777 wifi system
-    chmod 0777 /data/misc/wifi
-    mkdir /data/misc/radio 0775 radio radio
+    mkdir /data/misc/wifi 0770 wifi system
+    chmod 0770 /data/misc/wifi
+    mkdir /data/misc/radio 0774 radio radio
     mkdir /data/misc/wifi/sockets 0770 wifi wifi
     mkdir /data/misc/dhcp 0770 dhcp dhcp
     mkdir /data/wifi 0770 wifi wifi
@@ -390,36 +359,24 @@ on post-fs
     chmod 0775 /efs/.files/.mp301
 
 #SISO-PLAYREADY-CHANGES
-    # SKT PM PlayReady
-    mkdir /data/playready 777 system system
 
-    # MOBILE OFFICE Permanent memory access
-    mkdir /efs/security 0771 system system
-    chown radio system /efs/security
-    chmod 0771 /efs/security
-
-	# SKT DM
-    mkdir /efs/sktdm_mem 0771 system system
-    chown system system /efs/sktdm_mem
-    chmod 0771/efs/sktdm_mem
-    
 # Added by Yamaha Corporation. -----------------------------------------
 # setup for alsa snd device
-    symlink /dev/snd/pcmC0D0c /dev/pcmC0D0c
-    symlink /dev/snd/pcmC0D0p /dev/pcmC0D0p
-    symlink /dev/snd/controlC0 /dev/controlC0
-    symlink /dev/snd/timer /dev/timer
-    symlink /dev/snd/hwC0D0 /dev/hwC0D0
-    chmod 0777 /dev/pcmC0D0c
-    chmod 0777 /dev/pcmC0D0p
-    chmod 0777 /dev/controlC0
-    chmod 0777 /dev/timer
-    chmod 0777 /dev/hwC0D0
-    chmod 0777 /dev/snd/pcmC0D0c
-    chmod 0777 /dev/snd/pcmC0D0p
-    chmod 0777 /dev/snd/controlC0
-    chmod 0777 /dev/snd/timer
-    chmod 0777 /dev/snd/hwC0D0
+#    symlink /dev/snd/pcmC0D0c /dev/pcmC0D0c
+#    symlink /dev/snd/pcmC0D0p /dev/pcmC0D0p
+#    symlink /dev/snd/controlC0 /dev/controlC0
+#    symlink /dev/snd/timer /dev/timer
+#    symlink /dev/snd/hwC0D0 /dev/hwC0D0
+#    chmod 0777 /dev/pcmC0D0c
+#    chmod 0777 /dev/pcmC0D0p
+#    chmod 0777 /dev/controlC0
+#    chmod 0777 /dev/timer
+#    chmod 0777 /dev/hwC0D0
+    chmod 0770 /dev/snd/pcmC0D0c
+    chmod 0770 /dev/snd/pcmC0D0p
+    chmod 0770 /dev/snd/controlC0
+    chmod 0770 /dev/snd/timer
+    chmod 0770 /dev/snd/hwC0D0
 #-----------------------------------------------------------------------
 
 #ISDBT
@@ -533,7 +490,6 @@ on boot
 	chown radio system /sys/devices/virtual/sec/qt602240_noise_test/set_firm_version
 	chown radio system /sys/devices/virtual/sec/qt602240_noise_test/set_threshould
 	chown radio system /sys/devices/virtual/sec/qt602240_noise_test/set_all_refer
-	chown radio system /sys/devices/virtual/sec/qt602240_noise_test/disp_all_refdata	
 	chown radio system /sys/devices/virtual/sec/qt602240_noise_test/set_delta4
 	chown radio system /sys/devices/virtual/sec/qt602240_noise_test/set_refer4
 	chown radio system /sys/devices/virtual/sec/qt602240_noise_test/set_delta3
@@ -549,9 +505,6 @@ on boot
 	chown radio system /sys/devices/virtual/sec/sec_touchscreen/tsp_firm_update_status 
 	chown radio system /sys/devices/virtual/sec/sec_touchscreen/tsp_firm_update 
 	chown radio system /sys/devices/virtual/sec/sec_touchscreen/tsp_threshold
-    chown radio system /sys/devices/virtual/sec/sec_touchscreen/set_tsp_for_inputmethod	
-    chown radio system /sys/devices/virtual/sec/sec_touchscreen/call_release_touch	    
-    chown radio system /sys/devices/virtual/sec/sec_touchscreen/mxt_touchtype	    
 	chown radio system /sys/devices/platform/s5p-ehci/ehci_runtime
 	chown radio system /sys/devices/platform/modemctl/wakeup
 	chown radio system /sys/devices/platform/modemctl/control
@@ -584,14 +537,6 @@ on boot
 	chown radio system /sys/devices/platform/sec-battery/power_supply/battery/batt_vfocv
 	chown radio system /sys/devices/platform/sec-battery/power_supply/battery/batt_soc
 	chown radio system /sys/devices/platform/sec-battery/power_supply/battery/batt_vol
-        chown radio system /sys/devices/virtual/sec/switch/.usb_lock/enable
-        chown radio system /sys/devices/platform/sec-battery/power_supply/battery/batt_temp_adc_sub
-        chown radio system /sys/devices/platform/sec-battery/power_supply/battery/batt_temp_radc
-        chown radio system /sys/devices/platform/sec-battery/power_supply/battery/batt_esus_test
-        chown radio system /sys/devices/platform/sec-battery/power_supply/battery/sub_chg_state
-        chown radio system /sys/devices/platform/sec-battery/power_supply/battery/lpm_reboot_event
-
-
 	chown radio radio  /sys/devices/virtual/mdnieset_outdoor/switch_mdnieset_outdoor/mdnieset_outdoor_file_cmd 
 	chown radio radio /sys/devices/virtual/mdnieset_ui/switch_mdnieset_ui/mdnieset_init_file_cmd 
 	chown radio radio /sys/devices/virtual/mdnieset_ui/switch_mdnieset_ui/mdnieset_user_select_file_cmd
@@ -639,8 +584,6 @@ on boot
     chown system system /sys/class/leds/red/device/grppwm
     chown system system /sys/class/leds/red/device/blink
     chown system system /sys/class/timed_output/vibrator/enable
-# For power on/off sound routine with vibration mode
-    chmod 0664 /sys/class/timed_output/vibrator/enable
     chown system system /sys/module/sco/parameters/disable_esco
     chown system system /sys/kernel/ipv4/tcp_wmem_min
     chown system system /sys/kernel/ipv4/tcp_wmem_def
@@ -651,7 +594,6 @@ on boot
     chown system system /sys/class/power_supply/battery/temp
     chown system system /sys/class/proximity/proximity/proximity_avg
     chown system system /sys/class/sec/gsensorcal/calibration
-    chown system system /sys/class/sec/sec_fled/fled_state
 
 
     chown root radio /proc/cmdline
@@ -675,34 +617,20 @@ on boot
     chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
     chown bluetooth bluetooth /sys/class/rfkill/rfkill1/type
     
-# bt setprop
-	setprop service.brcm.bt.activation 0
-	setprop service.brcm.bt.srv_active 0
-	setprop service.brcm.bt.hcid_active 0
-	setprop service.brcm.bt.btld 0
-	setprop service.brcm.bt.btld_pid 0
-	setprop init.svc.bluetoothd stopped
-	
-	    
 # Define TCP buffer sizes for various networks
 #   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
-    setprop net.tcp.buffersize.default 4096,87380,704512,4096,16384,110208
-    setprop net.tcp.buffersize.wifi    4095,87380,563200,4096,16384,110208
-    setprop net.tcp.buffersize.umts    4094,87380,563200,4096,16384,110208
+    setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.wifi    4095,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.umts    4094,87380,110208,4096,16384,110208
     setprop net.tcp.buffersize.edge    4093,26280,35040,4096,16384,35040
     setprop net.tcp.buffersize.gprs    4092,8760,11680,4096,8760,11680
-    setprop net.tcp.buffersize.evdo_b  4094,87380,262144,4096,16384,262144
-    setprop net.tcp.buffersize.hspa    4092,87380,704512,4096,16384,110208
+    setprop net.tcp.buffersize.hspa    4092,87380,262144,4096,16384,110208
 
 # +++++++++++++++++++++++++++++++++++++++++++
 # for datarouter
     chown system system /dev/ttyGS0
     chown system system /dev/dun
 # +++++++++++++++++++++++++++++++++++++++++++      
-
-# klaatu tdmb ownership
-    chown system system /dev/tdmb
-    chmod 0660 /dev/tdmb
 
 # Audio Tunning Files
 	chmod 0777 /system/etc/audio/stream_speaker.txt
@@ -834,14 +762,6 @@ service media /system/bin/mediaserver
 #    group system audio camera graphics inet net_bt net_bt_admin
 #-----------------------------------------------------------------------
 
-# FEATURE_SEC_KOREA_MM_AUDIO
-# Use this codes for KOREA instead of PlaySound
-service powersnd /system/bin/samsungpowersoundplay
-    user media
-    group system
-    disabled
-    oneshot
-
 service playsound /system/bin/playsound
     user media
     group system
@@ -872,18 +792,6 @@ service softap_event /system/bin/softap_event
     disabled
     oneshot
 
-#for KT I-WLAN
-service iwlan /system/iwlan/iwlan -ddd -o -i
-
-# +++++++++++++++++++++++++++++++++++++++++++
-# for sslvpn
-service sslvpn /system/sslvpn/sslvpn --dev tun --management 127.0.0.1 7506 --config /sdcard/SecuwaySSL/client.conf --daemon --local 127.0.0.1 --port 7505 --proto tcp-server
-	user net_admin
-	group net_admin radio inet net_raw
-	oneshot
-# +++++++++++++++++++++++++++++++++++++++++++
-
-	
 #for WiFi MFG(TestMode)
 service mfgloader /system/bin/mfgloader
     disabled
@@ -897,10 +805,6 @@ service wlandutservice /system/bin/wlandutservice
 
 service macloader /system/bin/macloader
     oneshot
-
-service iwland /system/bin/iwland
-    user root
-
 # end of wifi
 
 service dbus /system/bin/dbus-daemon --system --nofork
@@ -955,11 +859,7 @@ service mtpd /system/bin/mtpd
     group vpn net_admin net_raw
     disabled
     oneshot
-    
-service dmb /system/bin/dmbserver
-    user system
-    group radio inet misc audio camera graphics net_bt net_bt_admin
-    
+
 service keystore /system/bin/keystore /data/misc/keystore
     user keystore
     group keystore
@@ -1000,14 +900,12 @@ service mobileTV /system/bin/broadcastProcessObserver
 
 	 
 on property:encryption.bootmode=remount
-    stop mobex-daemon
-    stop DR-deamon
     stop tvout
     stop media
     stop immvibed
     stop zygote   
 
-    mount ext4 /dev/block/mmcblk0p10 /data nosuid nodev noatime wait usedm discard,noauto_da_alloc,journal_checksum
+    mount ext4 /dev/block/mmcblk0p10 /data nosuid nodev noatime wait usedm discard,noauto_da_alloc
     chown system system /data
     chmod 0771 /data
     mkdir /data/dbdata
@@ -1065,9 +963,9 @@ on property:encryption.bootmode=remount
     mkdir /data/misc/systemkeys 0700 system system
     mkdir /data/misc/vpn/profiles 0770 system system
     # give system access to wpa_supplicant.conf for backup and restore
-    mkdir /data/misc/wifi 0777 wifi system
-    chmod 0777 /data/misc/wifi
-    mkdir /data/misc/radio 0775 radio radio
+    mkdir /data/misc/wifi 0770 wifi system
+    chmod 0770 /data/misc/wifi
+    mkdir /data/misc/radio 0774 radio radio
     mkdir /data/misc/wifi/sockets 0770 wifi wifi
     mkdir /data/misc/dhcp 0770 dhcp dhcp
     mkdir /data/wifi 0770 wifi wifi
@@ -1124,5 +1022,3 @@ on property:encryption.bootmode=remount
 on property:sys.boot_completed=1
 #    stop samsungani
     start stopbootanim
-    start DR-deamon    
-    start mobex-daemon   

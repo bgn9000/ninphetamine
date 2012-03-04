@@ -114,27 +114,27 @@ done;
 
 if [ -e /sys/devices/virtual/bdi/179:0/read_ahead_kb ];
 then
-    echo "256" > /sys/devices/virtual/bdi/179:0/read_ahead_kb;
+    echo "1024" > /sys/devices/virtual/bdi/179:0/read_ahead_kb;
 fi;
 	
 if [ -e /sys/devices/virtual/bdi/179:8/read_ahead_kb ];
   then
-    echo "256" > /sys/devices/virtual/bdi/179:8/read_ahead_kb;
+    echo "1024" > /sys/devices/virtual/bdi/179:8/read_ahead_kb;
 fi;
 
 if [ -e /sys/devices/virtual/bdi/179:16/read_ahead_kb ];
   then
-    echo "256" > /sys/devices/virtual/bdi/179:16/read_ahead_kb;
+    echo "1024" > /sys/devices/virtual/bdi/179:16/read_ahead_kb;
 fi;
 
 if [ -e /sys/devices/virtual/bdi/179:28/read_ahead_kb ];
   then
-    echo "256" > /sys/devices/virtual/bdi/179:28/read_ahead_kb;
+    echo "1024" > /sys/devices/virtual/bdi/179:28/read_ahead_kb;
 fi;
 
 if [ -e /sys/devices/virtual/bdi/179:33/read_ahead_kb ];
   then
-    echo "256" > /sys/devices/virtual/bdi/179:33/read_ahead_kb;
+    echo "1024" > /sys/devices/virtual/bdi/179:33/read_ahead_kb;
 fi;
 
 if [ -e /sys/devices/virtual/bdi/default/read_ahead_kb ];

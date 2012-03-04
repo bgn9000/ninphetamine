@@ -18,6 +18,11 @@ if [ ! -f /data/.siyah/disable-logger ];then
 insmod /lib/modules/logger.ko
 fi
 
+# voodoo color
+insmod /lib/modules/ld9040_voodoo.ko
+# and sound
+insmod /lib/modules/mc1n2_voodoo.ko
+
 # for ntfs automounting
 insmod /lib/modules/fuse.ko
 
