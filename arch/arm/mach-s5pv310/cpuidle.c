@@ -381,7 +381,7 @@ static struct cpuidle_state s5pv310_cpuidle_set[] = {
 	[1] = {
 		.enter			= s5pv310_enter_aftr,
 		.exit_latency		= 5,
-		.target_residency	= 10000,
+		.target_residency	= 25000,
 		.flags			= CPUIDLE_FLAG_TIME_VALID,
 		.name			= "AFTR",
 		.desc			= "ARM power down",
@@ -843,6 +843,16 @@ static int check_gps_uart_op(void)
 }
 #endif /* CONFIG_MACH_C1 */
 
+static int check_mfc_op(void)
+{
+        extern int mfc_is_running;
+
+        if (mfc_is_running)
+	        return IS_OP;
+
+	return NO_OP;
+}
+
 #ifdef CONFIG_SAMSUNG_LTE
 static int check_idpram_op(void)
 {
@@ -1043,6 +1053,13 @@ static int s5pv310_enter_aftr(struct cpuidle_device *dev,
 
 	enter_idle();
 	if (new_state == &dev->states[0])
+		ret = s5pv310_enter_idle(dev, new_state);
+	else
+	/*
+	 * Lock out AFTR when MFC is active - some people have video decoding issues here
+	 */
+
+	if (check_mfc_op())
 		ret = s5pv310_enter_idle(dev, new_state);
 	else
 		ret = (enable_mask & ENABLE_AFTR)
