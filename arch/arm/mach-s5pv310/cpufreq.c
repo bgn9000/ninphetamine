@@ -3162,7 +3162,7 @@ ssize_t store_deepsleep_cpulevel(struct cpufreq_policy *policy,
 
 	ret = sscanf(buf, "%d", &level);
 	if(ret!=1) return -EINVAL;
-	if(level <L2 || level>L5) return -EINVAL;
+	if(level <L2 || level>L6) return -EINVAL;
 	deepsleep_cpulevel = level;
 	return count;
 }
