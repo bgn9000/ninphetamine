@@ -1844,8 +1844,8 @@ static int s5pv310_cpufreq_resume(struct cpufreq_policy *policy)
 
 ssize_t set_freq_table(unsigned char step, unsigned int freq);
 static DEFINE_MUTEX(suspend_mutex);
-int deepsleep_cpulevel = L5;
-int deepsleep_buslevel = BUS_L2;
+int deepsleep_cpulevel = L4;
+int deepsleep_buslevel = BUS_L0;
 
 static int s5pv310_cpufreq_notifier_event(struct notifier_block *this,
 		unsigned long event, void *ptr)
