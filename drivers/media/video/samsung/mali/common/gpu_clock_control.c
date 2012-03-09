@@ -54,11 +54,11 @@ static ssize_t gpu_clock_store(struct device *dev, struct device_attribute *attr
 	else if ( (ret=sscanf(buf, "%d%% %d%%", &g[0], &g[1])) == 2 ) i=1;
 	
 	if(i) {
-		if(g[1]<0 || g[0]>100 || g[0]<g[1]) return -EINVAL;
+		if(g[1]<0 || g[0]>100) return -EINVAL;
 		mali_dvfs_threshold[0].upthreshold = ((int)((255*g[0])/100));
 		mali_dvfs_threshold[1].downthreshold = ((int)((255*g[1])/100));
 		if(ret==4) {
-			if(g[3]<0 || g[2]>100 || g[2]<g[3]) return -EINVAL;
+			if(g[3]<0 || g[2]>100) return -EINVAL;
 			mali_dvfs_threshold[1].upthreshold = ((int)((255*g[2])/100));
 			mali_dvfs_threshold[2].downthreshold = ((int)((255*g[3])/100));
 		}		
