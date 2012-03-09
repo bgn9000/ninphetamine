@@ -1,5 +1,12 @@
 #!/sbin/busybox sh
 
+mkdir /data/.siyah
+chmod 777 /data/.siyah
+
+. /res/customconfig/customconfig-helper
+read_defaults
+read_config
+
 /sbin/busybox mount rootfs / -o remount,rw
 
 #### proper module support ####
@@ -14,14 +21,9 @@
 /sbin/busybox mount rootfs / -o remount,ro
 
 #android logger
-if [ ! -f /data/.siyah/disable-logger ];then
+if [ "$logger" == "on" ];then
 insmod /lib/modules/logger.ko
 fi
-
-# voodoo color
-insmod /lib/modules/ld9040_voodoo.ko
-# and sound
-insmod /lib/modules/mc1n2_voodoo.ko
 
 # for ntfs automounting
 insmod /lib/modules/fuse.ko

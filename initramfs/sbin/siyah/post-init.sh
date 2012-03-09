@@ -39,8 +39,10 @@ sleep 30
 ) &
 
 ##### init scripts #####
+(
 sleep 12
 /sbin/busybox sh /sbin/siyah/run-init-scripts.sh
+)&
 
 #read sync < /data/sync_fifo
 #rm /data/sync_fifo
