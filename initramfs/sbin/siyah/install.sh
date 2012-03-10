@@ -6,7 +6,7 @@ payload_extracted=0
 
 cd /
 
-if [ ! -f /data/.siyah/root-installed ];
+if [ ! -f /data/.ikki/root-installed ];
 then
   if [ -f /system/xbin/su ];
   then
@@ -37,7 +37,7 @@ fi
 fi;
 
 echo "Checking if cwmanager is installed"
-if [ ! -f /system/.siyah/cwmmanager3-installed ];
+if [ ! -f /system/.ikki/cwmmanager3-installed ];
 then
 if [ "$payload_extracted" == "0" ];then
 payload_extracted=1
@@ -53,9 +53,9 @@ fi
   xzcat /tmp/misc/CWMManager.apk.xz > /system/app/CWMManager.apk
   chown 0.0 /system/app/CWMManager.apk
   chmod 644 /system/app/CWMManager.apk
-  mkdir /system/.siyah
-  chmod 755 /system/.siyah
-  echo 1 > /system/.siyah/cwmmanager3-installed
+  mkdir /system/.ikki
+  chmod 755 /system/.ikki
+  echo 1 > /system/.ikki/cwmmanager3-installed
 fi
 
 echo "liblights..."
@@ -63,7 +63,7 @@ romtype=`cat /proc/sys/kernel/siyah_feature_set`
 # only for non-cm7 roms
 if [ "${romtype}a" == "0a" ] || [ "${romtype}a" == "1a" ];
 then
-if [ ! -f /system/.siyah/liblights-installed ];then
+if [ ! -f /system/.ikki/liblights-installed ];then
   lightsmd5sum=`/sbin/busybox md5sum /system/lib/hw/lights.GT-I9100.so | /sbin/busybox awk '{print $1}'`
   blnlightsmd5sum=`/sbin/busybox md5sum /res/misc/lights.GT-I9100.so | /sbin/busybox awk '{print $1}'`
   if [ "${lightsmd5sum}a" != "${blnlightsmd5sum}a" ];
@@ -74,7 +74,7 @@ if [ ! -f /system/.siyah/liblights-installed ];then
     /sbin/busybox chown 0.0 /system/lib/hw/lights.GT-I9100.so
     /sbin/busybox chmod 644 /system/lib/hw/lights.GT-I9100.so
   fi
-  echo 1 > /system/.siyah/liblights-installed
+  echo 1 > /system/.ikki/liblights-installed
 fi
 fi
 

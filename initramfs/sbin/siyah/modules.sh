@@ -1,7 +1,7 @@
 #!/sbin/busybox sh
 
-mkdir /data/.siyah
-chmod 777 /data/.siyah
+mkdir /data/.ikki
+chmod 777 /data/.ikki
 
 . /res/customconfig/customconfig-helper
 read_defaults
