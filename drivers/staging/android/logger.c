@@ -26,12 +26,8 @@
 #include <linux/slab.h>
 #include <linux/time.h>
 #include "logger.h"
-/* for DB file corruption debugging
-#include "extendop.h"
-*/
 
 #include <asm/ioctls.h>
-#include <mach/sec_debug.h>
 
 /*
  * struct logger_log - represents a specific log, such as 'main' or 'radio'
@@ -690,8 +686,6 @@ static int __init logger_init(void)
 	if (unlikely(ret))
 		goto out;
 
-	sec_getlog_supply_loggerinfo(_buf_log_main, _buf_log_radio,
-				     _buf_log_events, _buf_log_system);
 out:
 	return ret;
 }
