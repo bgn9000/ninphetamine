@@ -31,6 +31,12 @@ typedef struct mali_dvfs_thresholdTag{
 extern mali_dvfs_table mali_dvfs[3];
 extern mali_dvfs_threshold_table mali_dvfs_threshold[3];
 
+typedef struct mali_dvfs_staycount{
+	unsigned int staycount;
+}mali_dvfs_staycount_table;
+
+extern mali_dvfs_staycount_table mali_dvfs_staycount[3];
+		
 static ssize_t gpu_clock_show(struct device *dev, struct device_attribute *attr, char *buf) {
 	return sprintf(buf, "Step0: %d\nStep1: %d\nStep2: %d\n"
 						"Threshold0-1/up-down: %d%% %d%%\n"
@@ -87,10 +93,35 @@ static ssize_t gpu_clock_store(struct device *dev, struct device_attribute *attr
 	return count;	
 }
 
+static ssize_t gpu_staycount_show(struct device *dev, struct device_attribute *attr, char *buf) {
+	return sprintf(buf, "%d %d %d\n", 
+	mali_dvfs_staycount[0].staycount,
+	mali_dvfs_staycount[1].staycount,
+	mali_dvfs_staycount[2].staycount
+	);
+}
+
+unsigned int g[4];
+
+static ssize_t gpu_staycount_store(struct device *dev, struct device_attribute *attr, const char *buf,
+									size_t count) {
+	unsigned int ret = -EINVAL;
+	int i = 0, i1, i2, i3;
+
+    if ( (ret=sscanf(buf, "%d %d %d", &i1, &i2, &i3))!=3 )
+		return -EINVAL;
+	mali_dvfs_staycount[0].staycount = i1;
+	mali_dvfs_staycount[1].staycount = i2;
+	mali_dvfs_staycount[2].staycount = i3;
+	return count;	
+}
+
 static DEVICE_ATTR(gpu_control, S_IRUGO | S_IWUGO, gpu_clock_show, gpu_clock_store);
+static DEVICE_ATTR(gpu_staycount, S_IRUGO | S_IWUGO, gpu_staycount_show, gpu_staycount_store);
 
 static struct attribute *gpu_clock_control_attributes[] = {
 	&dev_attr_gpu_control.attr,
+	&dev_attr_gpu_staycount.attr,
 	NULL
 };
 
