@@ -32,4 +32,16 @@ echo "10" > /proc/sys/net/ipv4/tcp_fin_timeout
 sysctl -w kernel.sched_min_granularity_ns=200000;
 sysctl -w kernel.sched_latency_ns=400000;
 sysctl -w kernel.sched_wakeup_granularity_ns=100000;
+setprop debug.performance.tuning 1; 
+setprop video.accelerate.hw 1;
+setprop debug.sf.hw 1;
 echo NO_GENTLE_FAIR_SLEEPERS > /sys/kernel/debug/sched_features
+#these are from NEAK kernel. I don't know where simone got them or if they do any good, but it seems that they won't harm anything
+renice 6 `pidof kswapd0`
+sysctl -w vm.vfs_cache_pressure=70
+echo "8" > /proc/sys/vm/page-cluster;
+echo "64000" > /proc/sys/kernel/msgmni;
+echo "64000" > /proc/sys/kernel/msgmax;
+echo "10" > /proc/sys/fs/lease-break-time;
+sysctl -w kernel.sem="500 512000 100 2048";
+sysctl -w kernel.shmmax=268435456;
