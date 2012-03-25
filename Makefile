@@ -337,7 +337,7 @@ CHECK		= sparse
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-SIYAH_FLAGS   = -marm -mtune=cortex-a9 -march=armv7-a
+
 MODFLAGS	= -DMODULE
 CFLAGS_MODULE   = $(MODFLAGS)
 AFLAGS_MODULE   = $(MODFLAGS)
@@ -345,7 +345,6 @@ LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
 CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
-
 
 # Use LINUXINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
@@ -355,11 +354,28 @@ LINUXINCLUDE    := -I$(srctree)/arch/$(hdr-arch)/include -Iinclude \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
+#SIYAH_FLAGS
+IKKI_FLAGS	= -marm -mtune=cortex-a9 -march=armv7-a -Wno-unused-but-set-variable -Wunused-variable
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks $(SIYAH_FLAGS) -mno-unaligned-access
+		   -fno-delete-null-pointer-checks $(IKKI_FLAGS) -mno-unaligned-access
+	   
+#NEAK_FLAGS
+#IKKI_FLAGS = -marm -march=armv7-a -mfloat-abi=hard \
+#		   -mcpu=cortex-a9 -mfpu=vfp3 \
+#		   -fsched-spec-load -floop-interchange -floop-strip-mine -floop-block \
+#		   -ffast-math -ftree-vectorize \
+#		   -funswitch-loops -fpredictive-commoning -fgcse-after-reload -fno-tree-vectorize \
+#		   -fipa-cp-clone -pipe \
+#		   -Wno-array-bounds
+#
+#KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+#		   -fno-strict-aliasing -fno-common \
+#		   -Werror-implicit-function-declaration \
+#		   -Wno-format-security \
+#		   -fno-delete-null-pointer-checks $(IKKI_FLAGS)
 
 #change@wtl.kSingh - enabling FIPS mode - starts
 ifeq ($(USE_SEC_FIPS_MODE),true)
@@ -542,6 +558,9 @@ endif # $(dot-config)
 # Defaults vmlinux but it is usually overridden in the arch makefile
 all: vmlinux
 
+ifdef CONFIG_CC_OPTIMIZE_FOR_FAST
+KBUILD_CFLAGS	+= -Ofast -DCONFIG_CC_OPTIMIZE_FOR_SPEED
+else
 ifdef CONFIG_CC_OPTIMIZE_FOR_SPEED
 KBUILD_CFLAGS	+= -O3 -DCONFIG_CC_OPTIMIZE_FOR_SPEED
 else
@@ -549,6 +568,7 @@ ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
 KBUILD_CFLAGS	+= -O2
+endif
 endif
 endif
 
