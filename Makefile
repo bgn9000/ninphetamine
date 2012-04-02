@@ -354,7 +354,6 @@ LINUXINCLUDE    := -I$(srctree)/arch/$(hdr-arch)/include -Iinclude \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-#SIYAH_FLAGS
 IKKI_FLAGS	= -marm -mtune=cortex-a9 -march=armv7-a -Wno-unused-but-set-variable -Wunused-variable
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
@@ -362,21 +361,6 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks $(IKKI_FLAGS) -mno-unaligned-access
 	   
-#NEAK_FLAGS
-#IKKI_FLAGS = -marm -march=armv7-a -mfloat-abi=hard \
-#		   -mcpu=cortex-a9 -mfpu=vfp3 \
-#		   -fsched-spec-load -floop-interchange -floop-strip-mine -floop-block \
-#		   -ffast-math -ftree-vectorize \
-#		   -funswitch-loops -fpredictive-commoning -fgcse-after-reload -fno-tree-vectorize \
-#		   -fipa-cp-clone -pipe \
-#		   -Wno-array-bounds
-#
-#KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-#		   -fno-strict-aliasing -fno-common \
-#		   -Werror-implicit-function-declaration \
-#		   -Wno-format-security \
-#		   -fno-delete-null-pointer-checks $(IKKI_FLAGS)
-
 #change@wtl.kSingh - enabling FIPS mode - starts
 ifeq ($(USE_SEC_FIPS_MODE),true)
 KBUILD_CFLAGS += -DSEC_FIPS_ENABLED
