@@ -34,18 +34,18 @@ mkdir $INITRAMFS_TMP/lib/modules/
 if [ "${1}" == "SAM" ]; 
 then
 	export CIBLE="sam"
-	cd initramfs/GB/sam-initramfs
+	cd sam-initramfs
 elif [ "${1}" == "AOSP" ];
 then
 	export CIBLE="aosp"
-	cd initramfs/GB/aosp-initramfs
+	cd aosp-initramfs
 fi
 tar cvf $INITRAMFS_TMP/initramfs.tar *
+cd ..
 cd $INITRAMFS_TMP
 tar xvf initramfs.tar
 rm initramfs.tar
 cd -
-cd ../../..
 find $INITRAMFS_TMP -name .git -exec rm -rf {} \;
 find -name '*.ko' -exec cp -av {} $INITRAMFS_TMP/lib/modules/ \;
 cd $INITRAMFS_TMP
