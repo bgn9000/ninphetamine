@@ -38,7 +38,7 @@ CONFIG_EXPERIMENTAL=y
 CONFIG_LOCK_KERNEL=y
 CONFIG_INIT_ENV_ARG_LIMIT=32
 CONFIG_CROSS_COMPILE=""
-CONFIG_LOCALVERSION="-ikki-the-phoenix-1.9"
+CONFIG_LOCALVERSION="-ikki-the-phoenix-1.10"
 # CONFIG_LOCALVERSION_AUTO is not set
 CONFIG_HAVE_KERNEL_GZIP=y
 CONFIG_HAVE_KERNEL_LZMA=y
@@ -435,7 +435,16 @@ CONFIG_MMC_MSHC_CLOCK_GATING=y
 #
 # Debugging Feature
 #
-# CONFIG_SEC_DEBUG is not set
+CONFIG_SEC_DEBUG=y
+# CONFIG_SEC_DEBUG_SCHED_LOG is not set
+# CONFIG_SEC_DEBUG_SEMAPHORE_LOG is not set
+CONFIG_SEC_DEBUG_USER=y
+# CONFIG_SEC_DEBUG_PM_TEMP is not set
+# CONFIG_SEC_DEBUG_IRQ_EXIT_LOG is not set
+# CONFIG_SEC_WATCHDOG_RESET is not set
+CONFIG_SEC_LOG=y
+CONFIG_SEC_LOG_NONCACHED=y
+CONFIG_SEC_LOG_LAST_KMSG=y
 
 #
 # Support dynamic cpu hotplug (Experimental)
@@ -570,8 +579,6 @@ CONFIG_ZBOOT_ROM_TEXT=0
 CONFIG_ZBOOT_ROM_BSS=0
 
 #_NINPHE_CONFIG_CMDLINE="console=ttySAC2,115200 consoleblank=0"
-#_SIYAH_CONFIG_CMDLINE="loglevel=4 console=ram sec_debug.enable=0 sec_debug.enable_user=0 c1_watchdog.sec_pet=5 sec_log=0x100000@0x5ea00000 ram_console=0x100000@0x5e900000 s3cfb.bootloaderfb=0x5ec00000 ld9040.get_lcdtype=0x2 consoleblank=0 lpj=3981312 vmalloc=144m"
-
 CONFIG_CMDLINE="loglevel=4 console=ram sec_debug.enable=0 sec_debug.enable_user=0 c1_watchdog.sec_pet=5 sec_log=0x100000@0x5ea00000 ram_console=0x100000@0x5e900000 s3cfb.bootloaderfb=0x5ec00000 ld9040.get_lcdtype=0x2 consoleblank=0 lpj=3981312 vmalloc=144m"
 
 # CONFIG_CMDLINE_FORCE is not set
@@ -2198,7 +2205,7 @@ CONFIG_STAGING=y
 #
 CONFIG_ANDROID=y
 CONFIG_ANDROID_BINDER_IPC=y
-CONFIG_ANDROID_LOGGER=y
+CONFIG_ANDROID_LOGGER=m
 CONFIG_ANDROID_RAM_CONSOLE=y
 CONFIG_ANDROID_RAM_CONSOLE_ENABLE_VERBOSE=y
 CONFIG_ANDROID_RAM_CONSOLE_ERROR_CORRECTION=y
