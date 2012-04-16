@@ -23,7 +23,7 @@ fi
     rm -f /system/xbin/su
     mkdir /system/xbin
     chmod 755 /system/xbin
-    cp /tmp/misc/su /system/xbin/su
+    xzcat /res/misc/payload/su.xz > /system/xbin/su
     chown 0.0 /system/xbin/su
     chmod 6755 /system/xbin/su
     ln -s /system/bin/su /system/xbin/su
