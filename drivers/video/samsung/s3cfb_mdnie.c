@@ -338,8 +338,6 @@ int s3c_mdnie_hw_init(void)
 
 int s3c_mdnie_unmask(void)
 {
-	unsigned int mask;
-
 	s3c_mdnie_writel(0x0, S3C_MDNIE_rR40);
 
 	return 0;
@@ -392,10 +390,9 @@ int s3c_mdnie_setup(void)
 }
 void mDNIe_Set_Mode(Lcd_mDNIe_UI mode, u8 mDNIe_Outdoor_OnOff)
 {
-	if(!g_mdine_enable) {
+	if(!g_mdine_enable)
 		printk(KERN_ERR"[mDNIE WARNING] mDNIE engine is OFF. So you cannot set mDnie Mode correctly.\n");
-		return 0;
-	}
+	
 	switch(current_mDNIe_user_mode){
 		case  mDNIe_DYNAMIC:
 			UI_MODE_FILE = UI_DYNAMIC_MODE_PATH;
@@ -554,10 +551,9 @@ void mDNIe_Set_Mode(Lcd_mDNIe_UI mode, u8 mDNIe_Outdoor_OnOff)
 
 void mDNIe_User_Select_Mode(Lcd_mDNIe_User_Set mode)
 {
-	if(!g_mdine_enable) {
+	if(!g_mdine_enable)
 		printk(KERN_ERR"[mDNIE WARNING] mDNIE engine is OFF. So you cannot set mDnie Mode correctly.\n");
-		return 0;
-	}
+		
 	switch (mode) {
 	case mDNIe_DYNAMIC:  
 		mDNIe_txtbuf_to_parsing(DYNAMIC_MODE_FILE);
@@ -578,10 +574,9 @@ void mDNIe_User_Select_Mode(Lcd_mDNIe_User_Set mode)
 
 void mDNIe_init_Mode_Set(Lcd_mDNIe_User_Set mode)
 {
-	if(!g_mdine_enable) {
+	if(!g_mdine_enable)
 		printk(KERN_ERR" [mDNIE WARNING] mDNIE engine is OFF. So you cannot set mDnie Mode correctly.\n");
-		return 0;
-	}
+
 	mDNIe_User_Select_Mode(current_mDNIe_user_mode);
 	mDNIe_Set_Mode(current_mDNIe_Mode, current_mDNIe_OutDoor_OnOff);
 
@@ -794,7 +789,7 @@ static ssize_t mdnieset_user_select_file_cmd_store(struct device *dev,
 
 
 	default:
-		printk(KERN_ERR "\mdnieset_user_select_file_cmd_store value is wrong : value(%d)\n", value);
+		printk(KERN_ERR "\ndnieset_user_select_file_cmd_store value is wrong : value(%d)\n", value);
 		break;
 	}
 	mDNIe_User_Select_Mode(current_mDNIe_user_mode);
@@ -831,7 +826,7 @@ static ssize_t mdnieset_init_file_cmd_store(struct device *dev,
 		break;
 		
 	default:
-		printk(KERN_ERR "\mdnieset_init_file_cmd_store value is wrong : value(%d)\n", value);
+		printk(KERN_ERR "\ndnieset_init_file_cmd_store value is wrong : value(%d)\n", value);
 		break;
 	}
 	mDNIe_User_Select_Mode(current_mDNIe_user_mode);
@@ -1153,6 +1148,11 @@ static int parse_text(char *src, int len)
 		//printk(KERN_INFO "line:%d, [start]%s[end]\n", i, str_line[i]);
 		ret = sscanf(str_line[i], "0x%x,0x%x\n", &data1, &data2);
 		//printk(KERN_INFO "Result => [0x%2x 0x%4x] %s\n", data1, data2, (ret == 2) ? "Ok" : "Not available");
+		//SpeedMod: Bypass DE SHARPNESS, DE TH, CS Gain
+		if (data1 == 0x003b) data2 = 0x0000; //DE SHARPNESS
+		if (data1 == 0x0042) data2 = 0x003f; //DE TH
+		if (data1 == 0x003f) data2 = 0x0000; //CS Gain
+		if (data1 == 0x004d) data2 = 0x0000; //PCC
 		if (ret == 2) {
 			mDNIe_data[index++] = (u16)data1 * 4;
 			mDNIe_data[index++]  = (u16)data2;
