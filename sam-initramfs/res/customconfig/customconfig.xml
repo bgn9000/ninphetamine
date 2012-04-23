@@ -150,7 +150,6 @@
              <spinnerItem name="deadline" value="deadline"/> 
              <spinnerItem name="noop" value="noop"/> 
              <spinnerItem name="cfq" value="cfq"/> 
-             <spinnerItem name="V(R)" value="vr"/> 
       </spinner>
       <spinner description="Charge current setting" name="Charge Current" action="chargecurrent">
              <spinnerItem name="AC:650mA, Misc,USB:450mA (Stock)" value="1"/> 
